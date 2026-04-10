@@ -5,5 +5,5 @@
 	const { children } = $props();
 </script>
 
-<ModeWatcher />
+<ModeWatcher themeColors={{ dark: '#111111', light: '#ffffff' }} />
 {@render children()}
