@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
+
 	import HeadToHead from '$lib/components/HeadToHead.svelte';
 	import HistoryList, { type GameHistoryEntry } from '$lib/components/HistoryList.svelte';
 	import Tracker from '$lib/components/Tracker.svelte';
@@ -7,6 +10,7 @@
 
 	const player1 = 'Player 1' as const;
 	const player2 = 'Player 2' as const;
+	const historyStorageKey = 'ttt-history';
 
 	type Winner = typeof player1 | typeof player2;
 
@@ -49,6 +53,7 @@
 	let rightScore = $state(0);
 	let isWinnerDialogOpen = $state(false);
 	let history = $state<GameHistoryEntry[]>([]);
+	let hasLoadedHistory = $state(false);
 
 	const winner = $derived(getWinner(leftScore, rightScore));
 
@@ -59,6 +64,32 @@
 		}
 
 		isWinnerDialogOpen = false;
+	});
+
+	$effect(() => {
+		if (!hasLoadedHistory || !browser) return;
+
+		localStorage.setItem(historyStorageKey, JSON.stringify(history));
+	});
+
+	onMount(() => {
+		if (!browser) return;
+
+		const storedHistory = localStorage.getItem(historyStorageKey);
+
+		if (!storedHistory) {
+			hasLoadedHistory = true;
+			return;
+		}
+
+		try {
+			const parsedHistory = JSON.parse(storedHistory) as GameHistoryEntry[];
+			history = Array.isArray(parsedHistory) ? parsedHistory : [];
+		} catch {
+			history = [];
+		}
+
+		hasLoadedHistory = true;
 	});
 
 	function updateLeftScore(value: number): void {
