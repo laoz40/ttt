@@ -16,6 +16,7 @@
 		normalizePlayerName,
 		saveSavedPlayerNames
 	} from '$lib/history-storage.js';
+	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 
 	const defaultPlayer1Name = 'Player 1';
 	const defaultPlayer2Name = 'Player 2';
@@ -228,6 +229,8 @@
 	}
 </script>
 
+<ThemeToggle class="absolute top-2 right-2" />
+
 <WinnerDialog
 	bind:open={isWinnerDialogOpen}
 	{leftScore}
@@ -297,7 +300,7 @@
 			type="button"
 			variant="ghost"
 			size="icon-sm"
-			class="absolute top-8 left-1/2 z-10 -translate-x-1/2"
+			class="absolute top-7 left-1/2 z-10 -translate-x-1/2"
 			aria-label="Swap player sides"
 			onclick={swapSides}
 		>

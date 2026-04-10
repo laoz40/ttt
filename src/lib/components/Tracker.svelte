@@ -54,9 +54,9 @@
 	<div class="flex gap-4">
 		<Button
 			type="button"
-			variant="outline"
+			variant="secondary"
 			size="icon-lg"
-			class="size-16"
+			class="size-16 dark:bg-secondary-foreground dark:text-primary-foreground"
 			aria-label={decreaseLabel}
 			onclick={onDecrease}
 		>
