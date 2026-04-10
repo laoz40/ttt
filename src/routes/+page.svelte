@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import ArrowLeftRight from '@lucide/svelte/icons/arrow-left-right';
+	import Settings from '@lucide/svelte/icons/settings';
 	import HeadToHead from '$lib/components/HeadToHead.svelte';
 	import HistoryEntryDialog from '$lib/components/HistoryEntryDialog.svelte';
 	import HistoryList, { type GameHistoryEntry } from '$lib/components/HistoryList.svelte';
@@ -233,7 +234,10 @@
 	}
 </script>
 
-<ThemeToggle class="absolute top-2 right-2" />
+<ThemeToggle class="absolute top-4 left-6" />
+<Button href="/settings" variant="outline" size="icon" class="absolute top-4 right-6">
+	<Settings />
+</Button>
 
 <WinnerDialog
 	bind:open={isWinnerDialogOpen}
