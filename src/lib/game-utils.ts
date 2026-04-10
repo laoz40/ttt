@@ -5,23 +5,29 @@ export function calculateWinner(
 	leftScore: number,
 	rightScore: number,
 	leftName: string,
-	rightName: string
+	rightName: string,
+	winningScore: number
 ): Winner | null {
-	if (leftScore >= 11 && leftScore - rightScore >= 2) {
+	if (leftScore >= winningScore && leftScore - rightScore >= 2) {
 		return leftName;
 	}
 
-	if (rightScore >= 11 && rightScore - leftScore >= 2) {
+	if (rightScore >= winningScore && rightScore - leftScore >= 2) {
 		return rightName;
 	}
 
 	return null;
 }
 
-export function calculateServingSide(leftScore: number, rightScore: number): ServingSide {
+export function calculateServingSide(
+	leftScore: number,
+	rightScore: number,
+	winningScore: number
+): ServingSide {
 	const totalPoints = leftScore + rightScore;
+	const deuceThreshold = Math.max(0, (winningScore - 1) * 2);
 
-	if (totalPoints < 20) {
+	if (totalPoints < deuceThreshold) {
 		return Math.floor(totalPoints / 2) % 2 === 0 ? 'left' : 'right';
 	}
 

@@ -5,6 +5,7 @@
 	import HistoryList, { type GameHistoryEntry } from '$lib/components/HistoryList.svelte';
 	import Tracker from '$lib/components/Tracker.svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
+	import { Input } from '$lib/components/ui/input/index.js';
 	import WinnerDialog from '$lib/components/WinnerDialog.svelte';
 	import { calculateServingSide, calculateWinner, formatHistoryDate } from '$lib/game-utils.js';
 	import {
@@ -22,14 +23,20 @@
 	let round = $state(0);
 	let leftScore = $state(0);
 	let rightScore = $state(0);
+	let winningScoreInput = $state('11');
 	let isWinnerDialogOpen = $state(false);
 	let history = $state<GameHistoryEntry[]>([]);
 	let loadedHistoryKey = $state<string | null>(null);
 	let savedPlayerNames = $state<string[]>([]);
 
 	const historyStorageKey = $derived(getHistoryStorageKey(player1Name, player2Name));
-	const winner = $derived(calculateWinner(leftScore, rightScore, player1Name, player2Name));
-	const servingSide = $derived(calculateServingSide(leftScore, rightScore));
+	const targetScore = $derived.by(() => {
+		const parsed = Number.parseInt(winningScoreInput, 10);
+
+		return Number.isFinite(parsed) && parsed >= 1 ? parsed : 11;
+	});
+	const winner = $derived(calculateWinner(leftScore, rightScore, player1Name, player2Name, targetScore));
+	const servingSide = $derived(calculateServingSide(leftScore, rightScore, targetScore));
 
 	// normalize player 1 name
 	$effect(() => {
@@ -121,6 +128,17 @@
 		round += scoreChange;
 	}
 
+	function sanitizeWinningScoreInput(event: Event): void {
+		const input = event.currentTarget as HTMLInputElement | null;
+
+		if (!input) return;
+
+		const nextValue = input.value.replace(/\D+/g, '');
+
+		winningScoreInput = nextValue;
+		input.value = nextValue;
+	}
+
 	function saveGameToHistory(): void {
 		if (!winner) return;
 
@@ -162,11 +180,20 @@
 	<h1 class="text-6xl font-bold">TTT</h1>
 
 	<section class="flex flex-row items-center gap-2">
-		<div class="flex flex-row gap-1">
+		<div class="flex items-center gap-1">
 			<h2 class="text-lg font-regular">First to</h2>
-			<p class="text-lg font-semibold">first to</p>
+			<Input
+				bind:value={winningScoreInput}
+				type="text"
+				inputmode="numeric"
+				pattern="[0-9]*"
+				autocomplete="off"
+				aria-label="Winning score"
+				class="h-auto w-5 border-0 bg-transparent p-0 text-center text-lg font-semibold shadow-none focus-visible:outline-none"
+				oninput={sanitizeWinningScoreInput}
+			/>
 		</div>
-		-
+		•
 		<div class="flex flex-row gap-1">
 			<h2 class="text-lg font-regular">Round</h2>
 			<p class="text-lg font-semibold">{round}</p>
