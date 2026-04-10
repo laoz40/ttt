@@ -356,11 +356,9 @@
 				</div>
 			{/if}
 
-			{#if history.length > 0}
 				<div class="px-6">
 					<HeadToHead entries={history} {player1Name} {player2Name} />
 				</div>
-			{/if}
 		</div>
 
 		{#if history.length > 0}
@@ -368,6 +366,10 @@
 				<div class="mx-auto w-full max-w-md px-6">
 					<HistoryList entries={history} onSelectEntry={openHistoryEntry} />
 				</div>
+			</div>
+		{:else}
+			<div class="mx-auto flex w-full max-w-md flex-1 items-start justify-center px-6 text-xs text-muted-foreground">
+				No games recorded between these opponents.
 			</div>
 		{/if}
 	</div>
