@@ -326,10 +326,6 @@
 			/>
 		</div>
 
-		<div class="mt-4 px-2">
-			<RoundIndicator rounds={roundWinners} />
-		</div>
-
 		<Button
 			type="button"
 			variant="ghost"
@@ -347,6 +343,10 @@
 			<option value={name}></option>
 		{/each}
 	</datalist>
+
+	<div class="my-6 px-2">
+		<RoundIndicator rounds={roundWinners} />
+	</div>
 
 	<div class="-mx-6 flex min-h-0 w-screen flex-1 flex-col gap-4 self-stretch">
 		<div class="mx-auto flex w-full max-w-md flex-col gap-4">
