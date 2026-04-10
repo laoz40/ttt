@@ -6,7 +6,12 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import WinnerDialog from '$lib/components/WinnerDialog.svelte';
 	import { calculateWinner, formatHistoryDate } from '$lib/game-utils.js';
-	import { getHistoryStorageKey, normalizePlayerName } from '$lib/history-storage.js';
+	import {
+		getHistoryStorageKey,
+		getSavedPlayerNames,
+		normalizePlayerName,
+		saveSavedPlayerNames
+	} from '$lib/history-storage.js';
 
 	const defaultPlayer1Name = 'Player 1';
 	const defaultPlayer2Name = 'Player 2';
@@ -19,6 +24,7 @@
 	let isWinnerDialogOpen = $state(false);
 	let history = $state<GameHistoryEntry[]>([]);
 	let loadedHistoryKey = $state<string | null>(null);
+	let savedPlayerNames = $state<string[]>([]);
 
 	const historyStorageKey = $derived(getHistoryStorageKey(player1Name, player2Name));
 	const winner = $derived(calculateWinner(leftScore, rightScore, player1Name, player2Name));
@@ -41,6 +47,13 @@
 		if (normalized !== player2Name) {
 			player2Name = normalized;
 		}
+	});
+
+	// load saved player names from local storage
+	$effect(() => {
+		if (!browser) return;
+
+		savedPlayerNames = getSavedPlayerNames();
 	});
 
 	// show winner dialog if there is a winner
@@ -109,6 +122,7 @@
 	function saveGameToHistory(): void {
 		if (!winner) return;
 
+		savedPlayerNames = saveSavedPlayerNames([player1Name, player2Name]);
 		history = [
 			{
 				date: formatHistoryDate(new Date()),
@@ -151,6 +165,7 @@
 			ariaLabel="Player 1 name"
 			decreaseLabel="Decrease tracker 1"
 			increaseLabel="Increase tracker 1"
+			nameSuggestionsListId="saved-player-names"
 			score={leftScore}
 			onDecrease={() => updateLeftScore(-1)}
 			onIncrease={() => updateLeftScore(1)}
@@ -161,11 +176,18 @@
 			ariaLabel="Player 2 name"
 			decreaseLabel="Decrease tracker 2"
 			increaseLabel="Increase tracker 2"
+			nameSuggestionsListId="saved-player-names"
 			score={rightScore}
 			onDecrease={() => updateRightScore(-1)}
 			onIncrease={() => updateRightScore(1)}
 		/>
 	</div>
+
+	<datalist id="saved-player-names">
+		{#each savedPlayerNames as name}
+			<option value={name}></option>
+		{/each}
+	</datalist>
 
 	{#if winner}
 		<Button type="button" class="w-full max-w-md" onclick={startNewGame}>New game</Button>

@@ -9,13 +9,26 @@
 		decreaseLabel: string;
 		increaseLabel: string;
 		name: string;
+		nameSuggestionsListId?: string;
 		onDecrease: () => void;
 		onIncrease: () => void;
 		score: number;
 	};
 
-	let { ariaLabel, decreaseLabel, increaseLabel, name = $bindable(), onDecrease, onIncrease, score }: TrackerProps =
-		$props();
+	let {
+		ariaLabel,
+		decreaseLabel,
+		increaseLabel,
+		name = $bindable(),
+		nameSuggestionsListId,
+		onDecrease,
+		onIncrease,
+		score
+	}: TrackerProps = $props();
+
+	function selectInputText(event: FocusEvent): void {
+		(event.currentTarget as HTMLInputElement | null)?.select();
+	}
 </script>
 
 <section class="flex flex-col items-center gap-5 p-2">
@@ -24,6 +37,8 @@
 		type="text"
 		class="w-full bg-transparent text-center text-lg font-medium outline-none border-0 p-0 shadow-none focus-visible:outline-none"
 		aria-label={ariaLabel}
+		list={nameSuggestionsListId}
+		onfocus={selectInputText}
 	/>
 	<p class="text-5xl font-bold">{score}</p>
 	<div class="flex gap-4">

@@ -1,4 +1,5 @@
 export const historyStorageKeyPrefix = 'ttt-history:';
+export const savedPlayerNamesStorageKey = 'ttt-saved-player-names';
 
 export function normalizePlayerName(value: string): string {
 	return value.trim().replace(/\s+/g, ' ');
@@ -17,6 +18,50 @@ export function getHistoryStorageKey(leftName: string, rightName: string): strin
 	return `${historyStorageKeyPrefix}${first}|${second}`;
 }
 
+function dedupePlayerNames(names: string[]): string[] {
+	const uniqueNames = new Map<string, string>();
+
+	for (const name of names) {
+		const normalizedName = normalizePlayerName(name);
+
+		if (!normalizedName) continue;
+
+		const lowerCaseName = normalizedName.toLowerCase();
+
+		if (!uniqueNames.has(lowerCaseName)) {
+			uniqueNames.set(lowerCaseName, normalizedName);
+		}
+	}
+
+	return [...uniqueNames.values()].sort((left, right) => left.localeCompare(right));
+}
+
+export function getSavedPlayerNames(): string[] {
+	if (typeof window === 'undefined') return [];
+
+	const storedNames = localStorage.getItem(savedPlayerNamesStorageKey);
+
+	if (!storedNames) return [];
+
+	try {
+		const parsedNames = JSON.parse(storedNames) as unknown;
+
+		return Array.isArray(parsedNames) ? dedupePlayerNames(parsedNames.filter((name): name is string => typeof name === 'string')) : [];
+	} catch {
+		return [];
+	}
+}
+
+export function saveSavedPlayerNames(names: string[]): string[] {
+	if (typeof window === 'undefined') return [];
+
+	const mergedNames = dedupePlayerNames([...getSavedPlayerNames(), ...names]);
+
+	localStorage.setItem(savedPlayerNamesStorageKey, JSON.stringify(mergedNames));
+
+	return mergedNames;
+}
+
 export function clearAllHistory(): void {
 	if (typeof window === 'undefined') return;
 
@@ -25,7 +70,7 @@ export function clearAllHistory(): void {
 	for (let index = 0; index < localStorage.length; index += 1) {
 		const key = localStorage.key(index);
 
-		if (key?.startsWith(historyStorageKeyPrefix)) {
+		if (key?.startsWith(historyStorageKeyPrefix) || key === savedPlayerNamesStorageKey) {
 			keysToRemove.push(key);
 		}
 	}
