@@ -242,7 +242,7 @@
 <HistoryEntryDialog bind:open={isHistoryDialogOpen} entry={selectedHistoryEntry} />
 
 <div class="flex h-screen flex-col gap-6 overflow-hidden px-6 py-8">
-	<h1 class="self-center text-6xl font-bold">TTT</h1>
+	<h1 class="self-center text-6xl font-bold text-primary">TTT</h1>
 
 	<section class="flex flex-row items-center gap-2 self-center">
 		<div class="flex items-center gap-1">
