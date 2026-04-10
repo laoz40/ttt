@@ -1,4 +1,5 @@
 export type Winner = string;
+export type ServingSide = 'left' | 'right';
 
 export function calculateWinner(
 	leftScore: number,
@@ -15,6 +16,16 @@ export function calculateWinner(
 	}
 
 	return null;
+}
+
+export function calculateServingSide(leftScore: number, rightScore: number): ServingSide {
+	const totalPoints = leftScore + rightScore;
+
+	if (totalPoints < 20) {
+		return Math.floor(totalPoints / 2) % 2 === 0 ? 'left' : 'right';
+	}
+
+	return totalPoints % 2 === 0 ? 'left' : 'right';
 }
 
 export function formatHistoryDate(date: Date): string {

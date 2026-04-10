@@ -6,7 +6,7 @@
 	import Tracker from '$lib/components/Tracker.svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import WinnerDialog from '$lib/components/WinnerDialog.svelte';
-	import { calculateWinner, formatHistoryDate } from '$lib/game-utils.js';
+	import { calculateServingSide, calculateWinner, formatHistoryDate } from '$lib/game-utils.js';
 	import {
 		getHistoryStorageKey,
 		getSavedPlayerNames,
@@ -29,6 +29,7 @@
 
 	const historyStorageKey = $derived(getHistoryStorageKey(player1Name, player2Name));
 	const winner = $derived(calculateWinner(leftScore, rightScore, player1Name, player2Name));
+	const servingSide = $derived(calculateServingSide(leftScore, rightScore));
 
 	// normalize player 1 name
 	$effect(() => {
@@ -172,6 +173,7 @@
 				ariaLabel="Player 1 name"
 				decreaseLabel="Decrease tracker 1"
 				increaseLabel="Increase tracker 1"
+				isServing={servingSide === 'left'}
 				nameSuggestionsListId="saved-player-names"
 				score={leftScore}
 				onDecrease={() => updateLeftScore(-1)}
@@ -183,6 +185,7 @@
 				ariaLabel="Player 2 name"
 				decreaseLabel="Decrease tracker 2"
 				increaseLabel="Increase tracker 2"
+				isServing={servingSide === 'right'}
 				nameSuggestionsListId="saved-player-names"
 				score={rightScore}
 				onDecrease={() => updateRightScore(-1)}

@@ -8,6 +8,7 @@
 		ariaLabel: string;
 		decreaseLabel: string;
 		increaseLabel: string;
+		isServing?: boolean;
 		name: string;
 		nameSuggestionsListId?: string;
 		onDecrease: () => void;
@@ -19,6 +20,7 @@
 		ariaLabel,
 		decreaseLabel,
 		increaseLabel,
+		isServing = false,
 		name = $bindable(),
 		nameSuggestionsListId,
 		onDecrease,
@@ -32,6 +34,11 @@
 </script>
 
 <section class="flex flex-col items-center gap-5 p-2">
+	<div class="flex h-3 items-center justify-center" aria-hidden="true">
+		{#if isServing}
+			<span class="size-2.5 rounded-full bg-primary"></span>
+		{/if}
+	</div>
 	<input
 		bind:value={name}
 		type="text"
@@ -46,7 +53,7 @@
 			type="button"
 			variant="outline"
 			size="icon-lg"
-			class="size-14"
+			class="size-16"
 			aria-label={decreaseLabel}
 			onclick={onDecrease}
 		>
@@ -55,7 +62,7 @@
 		<Button
 			type="button"
 			size="icon-lg"
-			class="size-14"
+			class="size-16"
 			aria-label={increaseLabel}
 			onclick={onIncrease}
 		>

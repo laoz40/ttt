@@ -23,13 +23,13 @@
 	<ul class="mt-3 space-y-3">
 		{#each entries as entry}
 			<li class="grid grid-cols-3 gap-4 text-sm">
-				<p>{entry.winnerName}</p>
+				<p class="min-w-0 truncate">{entry.winnerName}</p>
 				<div class="text-center">
 					<span class:font-bold={entry.player1Score > entry.player2Score}>{entry.player1Score}</span>
 					-
 					<span class:font-bold={entry.player2Score > entry.player1Score}>{entry.player2Score}</span>
 				</div>
-				<p class="text-right">{entry.date}</p>
+				<p class="min-w-0 truncate text-right">{entry.date}</p>
 			</li>
 		{/each}
 	</ul>
