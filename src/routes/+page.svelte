@@ -3,6 +3,7 @@
 	import ArrowLeftRight from '@lucide/svelte/icons/arrow-left-right';
 	import HeadToHead from '$lib/components/HeadToHead.svelte';
 	import HistoryList, { type GameHistoryEntry } from '$lib/components/HistoryList.svelte';
+	import RoundIndicator, { type RoundWinner } from '$lib/components/RoundIndicator.svelte';
 	import Tracker from '$lib/components/Tracker.svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
@@ -26,6 +27,7 @@
 	let winningScoreInput = $state('11');
 	let isWinnerDialogOpen = $state(false);
 	let history = $state<GameHistoryEntry[]>([]);
+	let roundWinners = $state<RoundWinner[]>([]);
 	let loadedHistoryKey = $state<string | null>(null);
 	let savedPlayerNames = $state<string[]>([]);
 
@@ -112,12 +114,40 @@
 		localStorage.setItem(historyStorageKey, JSON.stringify(history));
 	});
 
+	function addRoundWinner(winner: RoundWinner, count = 1): void {
+		if (count <= 0) return;
+
+		roundWinners = [...roundWinners, ...Array.from({ length: count }, () => winner)];
+	}
+
+	function removeRoundWinner(winner: RoundWinner, count = 1): void {
+		if (count <= 0) return;
+
+		const nextRoundWinners = [...roundWinners];
+		let remaining = count;
+
+		for (let index = nextRoundWinners.length - 1; index >= 0 && remaining > 0; index -= 1) {
+			if (nextRoundWinners[index] === winner) {
+				nextRoundWinners.splice(index, 1);
+				remaining -= 1;
+			}
+		}
+
+		roundWinners = nextRoundWinners;
+	}
+
 	function updateLeftScore(value: number): void {
 		const nextScore = Math.max(0, leftScore + value);
 		const scoreChange = nextScore - leftScore;
 
 		leftScore = nextScore;
 		round += scoreChange;
+
+		if (scoreChange > 0) {
+			addRoundWinner('player1', scoreChange);
+		} else if (scoreChange < 0) {
+			removeRoundWinner('player1', Math.abs(scoreChange));
+		}
 	}
 
 	function updateRightScore(value: number): void {
@@ -126,6 +156,12 @@
 
 		rightScore = nextScore;
 		round += scoreChange;
+
+		if (scoreChange > 0) {
+			addRoundWinner('player2', scoreChange);
+		} else if (scoreChange < 0) {
+			removeRoundWinner('player2', Math.abs(scoreChange));
+		}
 	}
 
 	function sanitizeWinningScoreInput(event: Event): void {
@@ -157,6 +193,7 @@
 	function swapSides(): void {
 		[player1Name, player2Name] = [player2Name, player1Name];
 		[leftScore, rightScore] = [rightScore, leftScore];
+		roundWinners = roundWinners.map((winner) => (winner === 'player1' ? 'player2' : 'player1'));
 	}
 
 	function startNewGame(): void {
@@ -164,6 +201,7 @@
 		leftScore = 0;
 		rightScore = 0;
 		round = 0;
+		roundWinners = [];
 		isWinnerDialogOpen = false;
 	}
 </script>
@@ -225,6 +263,10 @@
 				onDecrease={() => updateRightScore(-1)}
 				onIncrease={() => updateRightScore(1)}
 			/>
+		</div>
+
+		<div class="mt-4 px-2">
+			<RoundIndicator rounds={roundWinners} />
 		</div>
 
 		<Button
