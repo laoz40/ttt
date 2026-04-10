@@ -176,10 +176,10 @@
 	onNewGame={startNewGame}
 />
 
-<div class="flex min-h-screen flex-col items-center gap-6 px-6 py-8">
-	<h1 class="text-6xl font-bold">TTT</h1>
+<div class="flex h-screen flex-col gap-6 overflow-hidden px-6 py-8">
+	<h1 class="self-center text-6xl font-bold">TTT</h1>
 
-	<section class="flex flex-row items-center gap-2">
+	<section class="self-center flex flex-row items-center gap-2">
 		<div class="flex items-center gap-1">
 			<h2 class="text-lg font-regular">First to</h2>
 			<Input
@@ -200,7 +200,7 @@
 		</div>
 	</section>
 
-	<div class="relative w-full max-w-md">
+	<div class="relative w-full max-w-md self-center">
 		<div class="grid grid-cols-2 gap-8">
 			<Tracker
 				bind:name={player1Name}
@@ -245,12 +245,25 @@
 		{/each}
 	</datalist>
 
-	{#if winner}
-		<Button type="button" class="w-full max-w-md" onclick={startNewGame}>New game</Button>
-	{/if}
+	<div class="flex w-screen min-h-0 flex-1 flex-col gap-4 self-stretch -mx-6">
+		<div class="mx-auto flex w-full max-w-md flex-col gap-4">
+			{#if winner}
+				<Button type="button" class="w-full" onclick={startNewGame}>New game</Button>
+			{/if}
 
-	{#if history.length > 0}
-		<HeadToHead entries={history} {player1Name} {player2Name} />
-		<HistoryList entries={history} />
-	{/if}
+			{#if history.length > 0}
+				<div class="px-6">
+					<HeadToHead entries={history} {player1Name} {player2Name} />
+				</div>
+			{/if}
+		</div>
+
+		{#if history.length > 0}
+			<div class="min-h-0 flex-1 self-stretch overflow-y-auto">
+				<div class="mx-auto w-full max-w-md px-6">
+					<HistoryList entries={history} />
+				</div>
+			</div>
+		{/if}
+	</div>
 </div>

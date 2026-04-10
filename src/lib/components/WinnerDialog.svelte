@@ -14,14 +14,14 @@
 </script>
 
 <Dialog.Root bind:open>
-	<Dialog.Content class="max-w-xs overflow-hidden rounded-2xl">
+	<Dialog.Content class="left-1/2 top-1/2 w-full max-w-xs -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl">
 		<Dialog.Header class="w-full min-w-0">
 			<Dialog.Title class="flex w-full min-w-0 items-baseline justify-center gap-1 text-2xl font-medium leading-6">
-				<span class="min-w-0 flex-1 truncate text-right">{winner}</span>
+				<span class="min-w-0 max-w-[calc(100%-3rem)] truncate text-right">{winner}</span>
 				<span class="shrink-0">wins!</span>
 			</Dialog.Title>
 			<Dialog.Description class="flex w-full min-w-0 items-baseline justify-center gap-1">
-				<span class="min-w-0 flex-1 truncate text-right">{winner}</span>
+				<span class="min-w-0 max-w-[calc(100%-8rem)] truncate text-right">{winner}</span>
 				<span class="shrink-0">is simply better.</span>
 			</Dialog.Description>
 		</Dialog.Header>
