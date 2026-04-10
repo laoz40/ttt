@@ -273,7 +273,7 @@
 	onDeleteEntry={deleteHistoryEntry}
 />
 
-<div class="flex h-screen flex-col gap-6 overflow-hidden px-6 py-8">
+<div class="flex h-screen flex-col gap-4 overflow-hidden px-6 py-8">
 	<h1 class="self-center text-6xl font-bold text-primary">TTT</h1>
 
 	<section class="flex flex-row items-center gap-2 self-center">
