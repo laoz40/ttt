@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
+	import ArrowLeftRight from '@lucide/svelte/icons/arrow-left-right';
 	import HeadToHead from '$lib/components/HeadToHead.svelte';
 	import HistoryList, { type GameHistoryEntry } from '$lib/components/HistoryList.svelte';
 	import Tracker from '$lib/components/Tracker.svelte';
@@ -134,6 +135,11 @@
 		];
 	}
 
+	function swapSides(): void {
+		[player1Name, player2Name] = [player2Name, player1Name];
+		[leftScore, rightScore] = [rightScore, leftScore];
+	}
+
 	function startNewGame(): void {
 		saveGameToHistory();
 		leftScore = 0;
@@ -159,28 +165,41 @@
 		<p class="text-lg font-medium">{round}</p>
 	</section>
 
-	<div class="grid w-full max-w-md grid-cols-2 gap-8">
-		<Tracker
-			bind:name={player1Name}
-			ariaLabel="Player 1 name"
-			decreaseLabel="Decrease tracker 1"
-			increaseLabel="Increase tracker 1"
-			nameSuggestionsListId="saved-player-names"
-			score={leftScore}
-			onDecrease={() => updateLeftScore(-1)}
-			onIncrease={() => updateLeftScore(1)}
-		/>
+	<div class="relative w-full max-w-md">
+		<div class="grid grid-cols-2 gap-8">
+			<Tracker
+				bind:name={player1Name}
+				ariaLabel="Player 1 name"
+				decreaseLabel="Decrease tracker 1"
+				increaseLabel="Increase tracker 1"
+				nameSuggestionsListId="saved-player-names"
+				score={leftScore}
+				onDecrease={() => updateLeftScore(-1)}
+				onIncrease={() => updateLeftScore(1)}
+			/>
 
-		<Tracker
-			bind:name={player2Name}
-			ariaLabel="Player 2 name"
-			decreaseLabel="Decrease tracker 2"
-			increaseLabel="Increase tracker 2"
-			nameSuggestionsListId="saved-player-names"
-			score={rightScore}
-			onDecrease={() => updateRightScore(-1)}
-			onIncrease={() => updateRightScore(1)}
-		/>
+			<Tracker
+				bind:name={player2Name}
+				ariaLabel="Player 2 name"
+				decreaseLabel="Decrease tracker 2"
+				increaseLabel="Increase tracker 2"
+				nameSuggestionsListId="saved-player-names"
+				score={rightScore}
+				onDecrease={() => updateRightScore(-1)}
+				onIncrease={() => updateRightScore(1)}
+			/>
+		</div>
+
+		<Button
+			type="button"
+			variant="ghost"
+			size="icon-sm"
+			class="absolute left-1/2 top-8 z-10 -translate-x-1/2"
+			aria-label="Swap player sides"
+			onclick={swapSides}
+		>
+			<ArrowLeftRight aria-hidden="true" />
+		</Button>
 	</div>
 
 	<datalist id="saved-player-names">
