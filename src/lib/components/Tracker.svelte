@@ -34,19 +34,21 @@
 </script>
 
 <section class="flex flex-col items-center gap-5 p-2">
-	<div class="flex h-3 items-center justify-center" aria-hidden="true">
-		{#if isServing}
-			<span class="size-2.5 rounded-full bg-primary"></span>
-		{/if}
+	<div class="flex flex-col gap-1">
+		<div class="flex h-3 items-center justify-center" aria-hidden="true">
+			{#if isServing}
+				<span class="size-2.5 rounded-full bg-primary"></span>
+			{/if}
+		</div>
+		<input
+			bind:value={name}
+			type="text"
+			class="w-full border-0 bg-transparent p-0 text-center text-lg font-medium shadow-none outline-none focus-visible:outline-none"
+			aria-label={ariaLabel}
+			list={nameSuggestionsListId}
+			onfocus={selectInputText}
+		/>
 	</div>
-	<input
-		bind:value={name}
-		type="text"
-		class="w-full bg-transparent text-center text-lg font-medium outline-none border-0 p-0 shadow-none focus-visible:outline-none"
-		aria-label={ariaLabel}
-		list={nameSuggestionsListId}
-		onfocus={selectInputText}
-	/>
 	<p class="text-5xl font-bold">{score}</p>
 	<div class="flex gap-4">
 		<Button
