@@ -1,16 +1,26 @@
 <script lang="ts">
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import RoundIndicator from '$lib/components/RoundIndicator.svelte';
-	import { buttonVariants } from '$lib/components/ui/button/index.js';
+	import { Button, buttonVariants } from '$lib/components/ui/button/index.js';
 	import { normalizePlayerName } from '$lib/history-storage.js';
 	import type { GameHistoryEntry } from '$lib/components/HistoryList.svelte';
 
 	export type HistoryEntryDialogProps = {
 		entry: GameHistoryEntry | null;
 		open?: boolean;
+		onDeleteEntry: (entry: GameHistoryEntry) => void;
 	};
 
-	let { entry, open = $bindable(false) }: HistoryEntryDialogProps = $props();
+	let { entry, open = $bindable(false), onDeleteEntry }: HistoryEntryDialogProps = $props();
+
+	let isDeleteDialogOpen = $state(false);
+
+	function handleDeleteEntry(): void {
+		if (!entry) return;
+
+		onDeleteEntry(entry);
+		isDeleteDialogOpen = false;
+	}
 </script>
 
 <Dialog.Root bind:open={open}>
@@ -50,7 +60,10 @@
 					<RoundIndicator rounds={entry.roundWinners ?? []} />
 				</div>
 
-				<div class="mt-6 flex justify-center">
+				<div class="mt-6 flex items-center justify-between gap-3">
+					<Button type="button" variant="destructive" onclick={() => (isDeleteDialogOpen = true)}>
+						Delete evidence
+					</Button>
 					<Dialog.Close type="button" class={buttonVariants({ variant: 'default' })}>
 						Close
 					</Dialog.Close>
@@ -58,4 +71,25 @@
 			</div>
 		</Dialog.Content>
 	{/if}
+</Dialog.Root>
+
+<Dialog.Root bind:open={isDeleteDialogOpen}>
+	<Dialog.Overlay class="fixed inset-0 bg-background/80" style="z-index: 60;" />
+	<Dialog.Content class="rounded-2xl" style="z-index: 60;">
+		<Dialog.Header>
+			<Dialog.Title>Delete from history?</Dialog.Title>
+			<Dialog.Description>
+				This will permanently remove this match from your saved history. Was it that embarrassing?
+			</Dialog.Description>
+		</Dialog.Header>
+
+		<div class="flex gap-3 pt-2">
+			<Button type="button" variant="outline" class="flex-1" onclick={() => (isDeleteDialogOpen = false)}>
+				Cancel
+			</Button>
+			<Button type="button" variant="destructive" class="flex-1" onclick={handleDeleteEntry}>
+				Delete evidence
+			</Button>
+		</div>
+	</Dialog.Content>
 </Dialog.Root>

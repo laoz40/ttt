@@ -51,6 +51,12 @@
 		(event.currentTarget as HTMLInputElement | null)?.select();
 	}
 
+	function createHistoryEntryId(): string {
+		return typeof crypto !== 'undefined' && 'randomUUID' in crypto
+			? crypto.randomUUID()
+			: `history-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+	}
+
 	// normalize player 1 name
 	$effect(() => {
 		// fallback to default player name if empty name
@@ -111,11 +117,15 @@
 		try {
 			const parsedHistory = JSON.parse(storedHistory) as unknown;
 			history = Array.isArray(parsedHistory)
-				? (parsedHistory as GameHistoryEntry[]).map((entry) => ({
-						...entry,
+				? (parsedHistory as Array<Partial<GameHistoryEntry> & { id?: string }>).map((entry) => ({
+						id: entry.id ?? createHistoryEntryId(),
+						date: entry.date ?? formatHistoryDate(new Date()),
 						player1Name: entry.player1Name ?? defaultPlayer1Name,
+						player1Score: entry.player1Score ?? 0,
 						player2Name: entry.player2Name ?? defaultPlayer2Name,
-						roundWinners: entry.roundWinners ?? []
+						player2Score: entry.player2Score ?? 0,
+						roundWinners: entry.roundWinners ?? [],
+						winnerName: entry.winnerName ?? defaultPlayer1Name
 					}))
 				: [];
 		} catch {
@@ -199,6 +209,7 @@
 		savedPlayerNames = saveSavedPlayerNames([player1Name, player2Name]);
 		history = [
 			{
+				id: createHistoryEntryId(),
 				date: formatHistoryDate(new Date()),
 				player1Name,
 				player1Score: leftScore,
@@ -220,6 +231,15 @@
 	function openHistoryEntry(entry: GameHistoryEntry): void {
 		selectedHistoryEntry = entry;
 		isHistoryDialogOpen = true;
+	}
+
+	function deleteHistoryEntry(entry: GameHistoryEntry): void {
+		history = history.filter((historyEntry) => historyEntry.id !== entry.id);
+
+		if (selectedHistoryEntry?.id === entry.id) {
+			selectedHistoryEntry = null;
+			isHistoryDialogOpen = false;
+		}
 	}
 
 	function startNewGame(): void {
@@ -247,7 +267,11 @@
 	onNewGame={startNewGame}
 />
 
-<HistoryEntryDialog bind:open={isHistoryDialogOpen} entry={selectedHistoryEntry} />
+<HistoryEntryDialog
+	bind:open={isHistoryDialogOpen}
+	entry={selectedHistoryEntry}
+	onDeleteEntry={deleteHistoryEntry}
+/>
 
 <div class="flex h-screen flex-col gap-6 overflow-hidden px-6 py-8">
 	<h1 class="self-center text-6xl font-bold text-primary">TTT</h1>

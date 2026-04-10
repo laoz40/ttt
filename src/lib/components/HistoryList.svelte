@@ -2,6 +2,7 @@
 	import type { RoundWinner } from '$lib/components/RoundIndicator.svelte';
 
 	export type GameHistoryEntry = {
+		id: string;
 		date: string;
 		player1Name?: string;
 		player1Score: number;
@@ -27,7 +28,7 @@
 	</div>
 
 	<ul class="mt-3">
-		{#each entries as entry}
+		{#each entries as entry (entry.id)}
 			<li>
 				<button
 					type="button"
