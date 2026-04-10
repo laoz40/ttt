@@ -29,7 +29,7 @@
 		score
 	}: TrackerProps = $props();
 
-	function selectInputText(event: FocusEvent): void {
+	function selectInputText(event: FocusEvent | MouseEvent): void {
 		(event.currentTarget as HTMLInputElement | null)?.select();
 	}
 </script>
@@ -47,6 +47,7 @@
 			class="border-0 bg-transparent p-0 text-center text-lg font-medium shadow-none focus-visible:outline-none"
 			aria-label={ariaLabel}
 			list={nameSuggestionsListId}
+			onclick={selectInputText}
 			onfocus={selectInputText}
 		/>
 	</div>

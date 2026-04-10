@@ -46,6 +46,10 @@
 	);
 	const servingSide = $derived(calculateServingSide(leftScore, rightScore, targetScore));
 
+	function selectInputText(event: FocusEvent | MouseEvent): void {
+		(event.currentTarget as HTMLInputElement | null)?.select();
+	}
+
 	// normalize player 1 name
 	$effect(() => {
 		// fallback to default player name if empty name
@@ -255,6 +259,8 @@
 				autocomplete="off"
 				aria-label="Winning score"
 				class="h-auto w-5 border-0 bg-transparent p-0 text-center text-lg font-semibold shadow-none focus-visible:outline-none"
+				onclick={selectInputText}
+				onfocus={selectInputText}
 				oninput={sanitizeWinningScoreInput}
 			/>
 		</div>
