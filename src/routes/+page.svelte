@@ -1,62 +1,49 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { onMount } from 'svelte';
-
 	import HeadToHead from '$lib/components/HeadToHead.svelte';
 	import HistoryList, { type GameHistoryEntry } from '$lib/components/HistoryList.svelte';
 	import Tracker from '$lib/components/Tracker.svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import WinnerDialog from '$lib/components/WinnerDialog.svelte';
+	import { calculateWinner, formatHistoryDate } from '$lib/game-utils.js';
+	import { getHistoryStorageKey, normalizePlayerName } from '$lib/history-storage.js';
 
-	const player1 = 'Player 1' as const;
-	const player2 = 'Player 2' as const;
-	const historyStorageKey = 'ttt-history';
+	const defaultPlayer1Name = 'Player 1';
+	const defaultPlayer2Name = 'Player 2';
 
-	type Winner = typeof player1 | typeof player2;
-
-	function getWinner(leftScore: number, rightScore: number): Winner | null {
-		if (leftScore >= 11 && leftScore - rightScore >= 2) {
-			return player1;
-		}
-
-		if (rightScore >= 11 && rightScore - leftScore >= 2) {
-			return player2;
-		}
-
-		return null;
-	}
-
-	function formatHistoryDate(date: Date): string {
-		const now = new Date();
-		const isToday =
-			date.getDate() === now.getDate() &&
-			date.getMonth() === now.getMonth() &&
-			date.getFullYear() === now.getFullYear();
-
-		if (isToday) {
-			return new Intl.DateTimeFormat('en-US', {
-				hour: 'numeric',
-				minute: '2-digit',
-				hour12: true
-			}).format(date);
-		}
-
-		const day = date.getDate();
-		const month = date.getMonth() + 1;
-		const year = date.getFullYear().toString().slice(-2);
-
-		return `${day}.${month}.${year}`;
-	}
-
+	let player1Name = $state(defaultPlayer1Name);
+	let player2Name = $state(defaultPlayer2Name);
 	let round = $state(0);
 	let leftScore = $state(0);
 	let rightScore = $state(0);
 	let isWinnerDialogOpen = $state(false);
 	let history = $state<GameHistoryEntry[]>([]);
-	let hasLoadedHistory = $state(false);
+	let loadedHistoryKey = $state<string | null>(null);
 
-	const winner = $derived(getWinner(leftScore, rightScore));
+	const historyStorageKey = $derived(getHistoryStorageKey(player1Name, player2Name));
+	const winner = $derived(calculateWinner(leftScore, rightScore, player1Name, player2Name));
 
+	// normalize player 1 name
+	$effect(() => {
+		// fallback to default player name if empty name
+		const normalized = normalizePlayerName(player1Name) || defaultPlayer1Name;
+
+		if (normalized !== player1Name) {
+			player1Name = normalized;
+		}
+	});
+
+	// normalize player 2 name
+	$effect(() => {
+		// fallback to default player name if empty name
+		const normalized = normalizePlayerName(player2Name) || defaultPlayer2Name;
+
+		if (normalized !== player2Name) {
+			player2Name = normalized;
+		}
+	});
+
+	// show winner dialog if there is a winner
 	$effect(() => {
 		if (winner) {
 			isWinnerDialogOpen = true;
@@ -66,30 +53,41 @@
 		isWinnerDialogOpen = false;
 	});
 
+	// load history from local storage
 	$effect(() => {
-		if (!hasLoadedHistory || !browser) return;
-
-		localStorage.setItem(historyStorageKey, JSON.stringify(history));
-	});
-
-	onMount(() => {
 		if (!browser) return;
 
-		const storedHistory = localStorage.getItem(historyStorageKey);
+		const key = historyStorageKey;
+
+		if (!key) {
+			history = [];
+			loadedHistoryKey = null;
+			return;
+		}
+
+		const storedHistory = localStorage.getItem(key);
 
 		if (!storedHistory) {
-			hasLoadedHistory = true;
+			history = [];
+			loadedHistoryKey = key;
 			return;
 		}
 
 		try {
-			const parsedHistory = JSON.parse(storedHistory) as GameHistoryEntry[];
-			history = Array.isArray(parsedHistory) ? parsedHistory : [];
+			const parsedHistory = JSON.parse(storedHistory) as unknown;
+			history = Array.isArray(parsedHistory) ? (parsedHistory as GameHistoryEntry[]) : [];
 		} catch {
 			history = [];
 		}
 
-		hasLoadedHistory = true;
+		loadedHistoryKey = key;
+	});
+
+	// save history to local storage
+	$effect(() => {
+		if (!browser || !historyStorageKey || historyStorageKey !== loadedHistoryKey) return;
+
+		localStorage.setItem(historyStorageKey, JSON.stringify(history));
 	});
 
 	function updateLeftScore(value: number): void {
@@ -149,19 +147,21 @@
 
 	<div class="grid w-full max-w-md grid-cols-2 gap-8">
 		<Tracker
-			title={player1}
-			score={leftScore}
+			bind:name={player1Name}
+			ariaLabel="Player 1 name"
 			decreaseLabel="Decrease tracker 1"
 			increaseLabel="Increase tracker 1"
+			score={leftScore}
 			onDecrease={() => updateLeftScore(-1)}
 			onIncrease={() => updateLeftScore(1)}
 		/>
 
 		<Tracker
-			title={player2}
-			score={rightScore}
+			bind:name={player2Name}
+			ariaLabel="Player 2 name"
 			decreaseLabel="Decrease tracker 2"
 			increaseLabel="Increase tracker 2"
+			score={rightScore}
 			onDecrease={() => updateRightScore(-1)}
 			onIncrease={() => updateRightScore(1)}
 		/>
@@ -172,7 +172,7 @@
 	{/if}
 
 	{#if history.length > 0}
-		<HeadToHead entries={history} />
+		<HeadToHead entries={history} player1Name={player1Name} player2Name={player2Name} />
 		<HistoryList entries={history} />
 	{/if}
 </div>

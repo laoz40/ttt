@@ -1,17 +1,23 @@
 <script lang="ts">
 	import type { GameHistoryEntry } from '$lib/components/HistoryList.svelte';
+	import { normalizePlayerName } from '$lib/history-storage.js';
 
 	export type HeadToHeadProps = {
 		entries: GameHistoryEntry[];
+		player1Name: string;
+		player2Name: string;
 	};
 
-	const player1Name = 'Player 1';
-	const player2Name = 'Player 2';
+	let { entries, player1Name, player2Name }: HeadToHeadProps = $props();
 
-	let { entries }: HeadToHeadProps = $props();
-
-	const player1Wins = $derived(entries.filter((entry) => entry.winnerName === player1Name).length);
-	const player2Wins = $derived(entries.filter((entry) => entry.winnerName === player2Name).length);
+	const normalizedPlayer1Name = $derived(normalizePlayerName(player1Name).toLowerCase());
+	const normalizedPlayer2Name = $derived(normalizePlayerName(player2Name).toLowerCase());
+	const player1Wins = $derived(
+		entries.filter((entry) => normalizePlayerName(entry.winnerName).toLowerCase() === normalizedPlayer1Name).length
+	);
+	const player2Wins = $derived(
+		entries.filter((entry) => normalizePlayerName(entry.winnerName).toLowerCase() === normalizedPlayer2Name).length
+	);
 </script>
 
 <section class="w-full max-w-md pt-4">

@@ -1,11 +1,9 @@
 <script lang="ts">
-	export type Winner = 'Player 1' | 'Player 2';
-
 	export type GameHistoryEntry = {
 		date: string;
 		player1Score: number;
 		player2Score: number;
-		winnerName: Winner;
+		winnerName: string;
 	};
 
 	export type HistoryListProps = {
