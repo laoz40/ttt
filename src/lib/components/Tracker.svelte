@@ -3,6 +3,7 @@
 	import Plus from '@lucide/svelte/icons/plus';
 
 	import { Button } from '$lib/components/ui/button/index.js';
+	import { Input } from '$lib/components/ui/input/index.js';
 
 	export type TrackerProps = {
 		ariaLabel: string;
@@ -40,10 +41,10 @@
 				<span class="size-2.5 rounded-full bg-primary"></span>
 			{/if}
 		</div>
-		<input
+		<Input
 			bind:value={name}
 			type="text"
-			class="w-full border-0 bg-transparent p-0 text-center text-lg font-medium shadow-none outline-none focus-visible:outline-none"
+			class="border-0 bg-transparent p-0 text-center text-lg font-medium shadow-none focus-visible:outline-none"
 			aria-label={ariaLabel}
 			list={nameSuggestionsListId}
 			onfocus={selectInputText}

@@ -162,8 +162,15 @@
 	<h1 class="text-6xl font-bold">TTT</h1>
 
 	<section class="flex flex-row items-center gap-2">
-		<h2 class="text-lg font-medium">Round</h2>
-		<p class="text-lg font-medium">{round}</p>
+		<div class="flex flex-row gap-1">
+			<h2 class="text-lg font-regular">First to</h2>
+			<p class="text-lg font-semibold">first to</p>
+		</div>
+		-
+		<div class="flex flex-row gap-1">
+			<h2 class="text-lg font-regular">Round</h2>
+			<p class="text-lg font-semibold">{round}</p>
+		</div>
 	</section>
 
 	<div class="relative w-full max-w-md">
@@ -197,7 +204,7 @@
 			type="button"
 			variant="ghost"
 			size="icon-sm"
-			class="absolute left-1/2 top-8 z-10 -translate-x-1/2"
+			class="absolute top-8 left-1/2 z-10 -translate-x-1/2"
 			aria-label="Swap player sides"
 			onclick={swapSides}
 		>
@@ -216,7 +223,7 @@
 	{/if}
 
 	{#if history.length > 0}
-		<HeadToHead entries={history} player1Name={player1Name} player2Name={player2Name} />
+		<HeadToHead entries={history} {player1Name} {player2Name} />
 		<HistoryList entries={history} />
 	{/if}
 </div>
