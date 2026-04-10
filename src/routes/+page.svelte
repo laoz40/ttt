@@ -36,14 +36,18 @@
 	let loadedHistoryKey = $state<string | null>(null);
 	let savedPlayerNames = $state<string[]>([]);
 
-	const historyStorageKey = $derived(getHistoryStorageKey(player1Name, player2Name));
+	const player1NameValue = $derived(normalizePlayerName(player1Name) || defaultPlayer1Name);
+	const player2NameValue = $derived(normalizePlayerName(player2Name) || defaultPlayer2Name);
+	const historyStorageKey = $derived(
+		getHistoryStorageKey(player1NameValue, player2NameValue)
+	);
 	const targetScore = $derived.by(() => {
 		const parsed = Number.parseInt(winningScoreInput, 10);
 
 		return Number.isFinite(parsed) && parsed >= 1 ? parsed : 11;
 	});
 	const winner = $derived(
-		calculateWinner(leftScore, rightScore, player1Name, player2Name, targetScore)
+		calculateWinner(leftScore, rightScore, player1NameValue, player2NameValue, targetScore)
 	);
 	const servingSide = $derived(calculateServingSide(leftScore, rightScore, targetScore));
 
@@ -56,26 +60,6 @@
 			? crypto.randomUUID()
 			: `history-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 	}
-
-	// normalize player 1 name
-	$effect(() => {
-		// fallback to default player name if empty name
-		const normalized = normalizePlayerName(player1Name) || defaultPlayer1Name;
-
-		if (normalized !== player1Name) {
-			player1Name = normalized;
-		}
-	});
-
-	// normalize player 2 name
-	$effect(() => {
-		// fallback to default player name if empty name
-		const normalized = normalizePlayerName(player2Name) || defaultPlayer2Name;
-
-		if (normalized !== player2Name) {
-			player2Name = normalized;
-		}
-	});
 
 	// load saved player names from local storage
 	$effect(() => {
@@ -120,12 +104,15 @@
 				? (parsedHistory as Array<Partial<GameHistoryEntry> & { id?: string }>).map((entry) => ({
 						id: entry.id ?? createHistoryEntryId(),
 						date: entry.date ?? formatHistoryDate(new Date()),
-						player1Name: entry.player1Name ?? defaultPlayer1Name,
+						player1Name:
+							normalizePlayerName(entry.player1Name ?? '') || defaultPlayer1Name,
 						player1Score: entry.player1Score ?? 0,
-						player2Name: entry.player2Name ?? defaultPlayer2Name,
+						player2Name:
+							normalizePlayerName(entry.player2Name ?? '') || defaultPlayer2Name,
 						player2Score: entry.player2Score ?? 0,
 						roundWinners: entry.roundWinners ?? [],
-						winnerName: entry.winnerName ?? defaultPlayer1Name
+						winnerName:
+							normalizePlayerName(entry.winnerName ?? '') || defaultPlayer1Name
 					}))
 				: [];
 		} catch {
@@ -206,14 +193,14 @@
 	function saveGameToHistory(): void {
 		if (!winner) return;
 
-		savedPlayerNames = saveSavedPlayerNames([player1Name, player2Name]);
+		savedPlayerNames = saveSavedPlayerNames([player1NameValue, player2NameValue]);
 		history = [
 			{
 				id: createHistoryEntryId(),
 				date: formatHistoryDate(new Date()),
-				player1Name,
+				player1Name: player1NameValue,
 				player1Score: leftScore,
-				player2Name,
+				player2Name: player2NameValue,
 				player2Score: rightScore,
 				roundWinners: [...roundWinners],
 				winnerName: winner
@@ -278,7 +265,7 @@
 
 	<section class="flex flex-row items-center gap-2 self-center">
 		<div class="flex items-center gap-1">
-			<h2 class="font-regular text-lg">First to</h2>
+			<h2 class="font-regular text-base">First to</h2>
 			<Input
 				bind:value={winningScoreInput}
 				type="text"
@@ -286,7 +273,7 @@
 				pattern="[0-9]*"
 				autocomplete="off"
 				aria-label="Winning score"
-				class="h-auto w-5 border-0 bg-transparent p-0 text-center text-lg font-semibold shadow-none focus-visible:outline-none"
+				class="h-auto w-5 border-0 bg-transparent p-0 text-center text-base font-semibold shadow-none focus-visible:outline-none"
 				onclick={selectInputText}
 				onfocus={selectInputText}
 				oninput={sanitizeWinningScoreInput}
@@ -294,8 +281,8 @@
 		</div>
 		•
 		<div class="flex flex-row gap-1">
-			<h2 class="font-regular text-lg">Round</h2>
-			<p class="text-lg font-semibold">{round}</p>
+			<h2 class="font-regular text-base">Round</h2>
+			<p class="text-base font-semibold">{round}</p>
 		</div>
 	</section>
 
@@ -357,7 +344,7 @@
 			{/if}
 
 				<div class="px-6">
-					<HeadToHead entries={history} {player1Name} {player2Name} />
+					<HeadToHead entries={history} player1Name={player1NameValue} player2Name={player2NameValue} />
 				</div>
 		</div>
 

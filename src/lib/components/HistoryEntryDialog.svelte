@@ -5,6 +5,9 @@
 	import { normalizePlayerName } from '$lib/history-storage.js';
 	import type { GameHistoryEntry } from '$lib/components/HistoryList.svelte';
 
+	const defaultPlayer1Name = 'Player 1';
+	const defaultPlayer2Name = 'Player 2';
+
 	export type HistoryEntryDialogProps = {
 		entry: GameHistoryEntry | null;
 		open?: boolean;
@@ -21,6 +24,10 @@
 		onDeleteEntry(entry);
 		isDeleteDialogOpen = false;
 	}
+
+	function getPlayerName(value: string | undefined, fallback: string): string {
+		return normalizePlayerName(value ?? '') || fallback;
+	}
 </script>
 
 <Dialog.Root bind:open={open}>
@@ -34,25 +41,25 @@
 
 				<div class="mt-5 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3">
 					<p class="min-w-0 truncate text-left text-sm font-medium text-muted-foreground">
-						{entry.player1Name ?? 'Player 1'}
+						{getPlayerName(entry.player1Name, defaultPlayer1Name)}
 					</p>
 					<p class="shrink-0 text-center text-3xl font-regular">
 						<span
 							class:font-black={normalizePlayerName(entry.winnerName).toLowerCase() ===
-								normalizePlayerName(entry.player1Name ?? 'Player 1').toLowerCase()}
+								normalizePlayerName(getPlayerName(entry.player1Name, defaultPlayer1Name)).toLowerCase()}
 						>
 							{entry.player1Score}
 						</span>
 						-
 						<span
 							class:font-black={normalizePlayerName(entry.winnerName).toLowerCase() ===
-								normalizePlayerName(entry.player2Name ?? 'Player 2').toLowerCase()}
+								normalizePlayerName(getPlayerName(entry.player2Name, defaultPlayer2Name)).toLowerCase()}
 						>
 							{entry.player2Score}
 						</span>
 					</p>
 					<p class="min-w-0 truncate text-right text-sm font-medium text-muted-foreground">
-						{entry.player2Name ?? 'Player 2'}
+						{getPlayerName(entry.player2Name, defaultPlayer2Name)}
 					</p>
 				</div>
 
