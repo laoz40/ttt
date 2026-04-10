@@ -337,24 +337,20 @@
 		<RoundIndicator rounds={roundWinners} />
 	</div>
 
-	<div class="-mx-6 flex min-h-0 w-screen flex-1 flex-col gap-4 self-stretch">
-		<div class="mx-auto flex w-full max-w-md flex-col gap-4">
+	<div class="-mx-6 flex min-h-0 w-screen flex-1 flex-col gap-4 self-stretch overflow-hidden">
+		<div class="mx-auto flex w-full max-w-md flex-col gap-4 px-6">
 			{#if winner}
-				<div class="px-6">
+				<div>
 					<Button type="button" class="w-full" onclick={startNewGame}>NEW GAME</Button>
 				</div>
 			{/if}
 
-				<div class="px-6">
-					<HeadToHead entries={history} player1Name={player1NameValue} player2Name={player2NameValue} />
-				</div>
+			<HeadToHead entries={history} player1Name={player1NameValue} player2Name={player2NameValue} />
 		</div>
 
 		{#if history.length > 0}
-			<div class="min-h-0 flex-1 self-stretch overflow-y-auto">
-				<div class="mx-auto w-full max-w-md px-6">
-					<HistoryList entries={history} onSelectEntry={openHistoryEntry} />
-				</div>
+			<div class="min-h-0 flex-1 self-stretch">
+				<HistoryList entries={history} onSelectEntry={openHistoryEntry} />
 			</div>
 		{:else}
 			<div class="mx-auto flex w-full max-w-md flex-1 items-start justify-center px-6 text-xs text-muted-foreground">
