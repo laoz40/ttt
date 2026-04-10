@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 @import "tw-animate-css";
 @import "shadcn-svelte/tailwind.css";
-@import "@fontsource-variable/outfit";
+@import "@fontsource/nova-square";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -38,10 +38,10 @@
   --sidebar-accent-foreground: oklch(0.4910 0.1442 43.4774);
   --sidebar-border: oklch(0.9271 0.0075 260.7315);
   --sidebar-ring: oklch(0.7857 0.1716 68.5720);
-  --font-sans: Poppins, ui-sans-serif, sans-serif, system-ui;
-  --font-serif: Poppins, ui-sans-serif, sans-serif, system-ui;
-  --font-mono: Poppins, ui-sans-serif, sans-serif, system-ui;
-  --radius: 1.8rem;
+  --font-sans: "Nova Square", ui-sans-serif, sans-serif, system-ui;
+  --font-serif: "Nova Square", ui-sans-serif, sans-serif, system-ui;
+  --font-mono: "Nova Square", ui-sans-serif, sans-serif, system-ui;
+  --radius: 0.5rem;
   --shadow-x: 0px;
   --shadow-y: 4px;
   --shadow-blur: 8px;
@@ -93,9 +93,9 @@
   --sidebar-accent-foreground: oklch(0.9277 0.1183 95.5956);
   --sidebar-border: oklch(0.3715 0 0);
   --sidebar-ring: oklch(0.7857 0.1716 68.5720);
-  --font-sans: Poppins, ui-sans-serif, sans-serif, system-ui;
-  --font-serif: Poppins, ui-sans-serif, sans-serif, system-ui;
-  --font-mono: Poppins, ui-sans-serif, sans-serif, system-ui;
+  --font-sans: "Nova Square", ui-sans-serif, sans-serif, system-ui;
+  --font-serif: "Nova Square", ui-sans-serif, sans-serif, system-ui;
+  --font-mono: "Nova Square", ui-sans-serif, sans-serif, system-ui;
   --radius: 1.8rem;
   --shadow-x: 0px;
   --shadow-y: 4px;
@@ -171,6 +171,6 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background font-sans text-foreground;
   }
 }

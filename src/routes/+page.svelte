@@ -2,6 +2,7 @@
 	import { browser } from '$app/environment';
 	import ArrowLeftRight from '@lucide/svelte/icons/arrow-left-right';
 	import HeadToHead from '$lib/components/HeadToHead.svelte';
+	import HistoryEntryDialog from '$lib/components/HistoryEntryDialog.svelte';
 	import HistoryList, { type GameHistoryEntry } from '$lib/components/HistoryList.svelte';
 	import RoundIndicator, { type RoundWinner } from '$lib/components/RoundIndicator.svelte';
 	import Tracker from '$lib/components/Tracker.svelte';
@@ -28,6 +29,8 @@
 	let isWinnerDialogOpen = $state(false);
 	let history = $state<GameHistoryEntry[]>([]);
 	let roundWinners = $state<RoundWinner[]>([]);
+	let selectedHistoryEntry = $state<GameHistoryEntry | null>(null);
+	let isHistoryDialogOpen = $state(false);
 	let loadedHistoryKey = $state<string | null>(null);
 	let savedPlayerNames = $state<string[]>([]);
 
@@ -37,7 +40,9 @@
 
 		return Number.isFinite(parsed) && parsed >= 1 ? parsed : 11;
 	});
-	const winner = $derived(calculateWinner(leftScore, rightScore, player1Name, player2Name, targetScore));
+	const winner = $derived(
+		calculateWinner(leftScore, rightScore, player1Name, player2Name, targetScore)
+	);
 	const servingSide = $derived(calculateServingSide(leftScore, rightScore, targetScore));
 
 	// normalize player 1 name
@@ -99,7 +104,14 @@
 
 		try {
 			const parsedHistory = JSON.parse(storedHistory) as unknown;
-			history = Array.isArray(parsedHistory) ? (parsedHistory as GameHistoryEntry[]) : [];
+			history = Array.isArray(parsedHistory)
+				? (parsedHistory as GameHistoryEntry[]).map((entry) => ({
+						...entry,
+						player1Name: entry.player1Name ?? defaultPlayer1Name,
+						player2Name: entry.player2Name ?? defaultPlayer2Name,
+						roundWinners: entry.roundWinners ?? []
+					}))
+				: [];
 		} catch {
 			history = [];
 		}
@@ -182,8 +194,11 @@
 		history = [
 			{
 				date: formatHistoryDate(new Date()),
+				player1Name,
 				player1Score: leftScore,
+				player2Name,
 				player2Score: rightScore,
+				roundWinners: [...roundWinners],
 				winnerName: winner
 			},
 			...history
@@ -196,6 +211,11 @@
 		roundWinners = roundWinners.map((winner) => (winner === 'player1' ? 'player2' : 'player1'));
 	}
 
+	function openHistoryEntry(entry: GameHistoryEntry): void {
+		selectedHistoryEntry = entry;
+		isHistoryDialogOpen = true;
+	}
+
 	function startNewGame(): void {
 		saveGameToHistory();
 		leftScore = 0;
@@ -203,6 +223,8 @@
 		round = 0;
 		roundWinners = [];
 		isWinnerDialogOpen = false;
+		selectedHistoryEntry = null;
+		isHistoryDialogOpen = false;
 	}
 </script>
 
@@ -214,12 +236,14 @@
 	onNewGame={startNewGame}
 />
 
+<HistoryEntryDialog bind:open={isHistoryDialogOpen} entry={selectedHistoryEntry} />
+
 <div class="flex h-screen flex-col gap-6 overflow-hidden px-6 py-8">
 	<h1 class="self-center text-6xl font-bold">TTT</h1>
 
-	<section class="self-center flex flex-row items-center gap-2">
+	<section class="flex flex-row items-center gap-2 self-center">
 		<div class="flex items-center gap-1">
-			<h2 class="text-lg font-regular">First to</h2>
+			<h2 class="font-regular text-lg">First to</h2>
 			<Input
 				bind:value={winningScoreInput}
 				type="text"
@@ -233,7 +257,7 @@
 		</div>
 		•
 		<div class="flex flex-row gap-1">
-			<h2 class="text-lg font-regular">Round</h2>
+			<h2 class="font-regular text-lg">Round</h2>
 			<p class="text-lg font-semibold">{round}</p>
 		</div>
 	</section>
@@ -287,10 +311,12 @@
 		{/each}
 	</datalist>
 
-	<div class="flex w-screen min-h-0 flex-1 flex-col gap-4 self-stretch -mx-6">
+	<div class="-mx-6 flex min-h-0 w-screen flex-1 flex-col gap-4 self-stretch">
 		<div class="mx-auto flex w-full max-w-md flex-col gap-4">
 			{#if winner}
-				<Button type="button" class="w-full" onclick={startNewGame}>New game</Button>
+				<div class="px-6">
+					<Button type="button" class="w-full" onclick={startNewGame}>NEW GAME</Button>
+				</div>
 			{/if}
 
 			{#if history.length > 0}
@@ -303,7 +329,7 @@
 		{#if history.length > 0}
 			<div class="min-h-0 flex-1 self-stretch overflow-y-auto">
 				<div class="mx-auto w-full max-w-md px-6">
-					<HistoryList entries={history} />
+					<HistoryList entries={history} onSelectEntry={openHistoryEntry} />
 				</div>
 			</div>
 		{/if}

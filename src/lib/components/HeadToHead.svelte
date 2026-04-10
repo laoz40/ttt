@@ -22,8 +22,8 @@
 
 <section class="w-full max-w-md pt-4">
 	<div class="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 pb-3">
-		<p class="min-w-0 truncate text-sm font-medium text-muted-foreground">{player1Name}</p>
+		<p class="min-w-0 truncate text-sm font-medium">{player1Name}</p>
 		<p class="text-3xl font-semibold">{player1Wins} - {player2Wins}</p>
-		<p class="min-w-0 truncate text-right text-sm font-medium text-muted-foreground">{player2Name}</p>
+		<p class="min-w-0 truncate text-right text-sm font-medium">{player2Name}</p>
 	</div>
 </section>

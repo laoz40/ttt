@@ -8,7 +8,7 @@
 	let { rounds }: RoundIndicatorProps = $props();
 </script>
 
-<section class="w-full overflow-x-auto" aria-label="Round point indicator">
+<section class="w-full max-w-full overflow-hidden" aria-label="Round point indicator">
 	<div class="flex min-h-4 justify-start gap-1">
 		{#each rounds as round}
 			<div class="flex h-4 w-4 items-end justify-center">
