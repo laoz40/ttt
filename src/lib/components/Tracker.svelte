@@ -12,6 +12,7 @@
 		isServing?: boolean;
 		name: string;
 		nameSuggestionsListId?: string;
+		placeholder?: string;
 		onDecrease: () => void;
 		onIncrease: () => void;
 		score: number;
@@ -24,6 +25,7 @@
 		isServing = false,
 		name = $bindable(),
 		nameSuggestionsListId,
+		placeholder,
 		onDecrease,
 		onIncrease,
 		score
@@ -47,6 +49,7 @@
 			class="border-0 bg-transparent p-0 text-center text-2xl font-medium shadow-none focus-visible:outline-none"
 			aria-label={ariaLabel}
 			list={nameSuggestionsListId}
+			placeholder={placeholder}
 			onclick={selectInputText}
 			onfocus={selectInputText}
 		/>

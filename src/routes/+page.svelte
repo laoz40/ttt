@@ -22,8 +22,8 @@
 	const defaultPlayer1Name = 'Player 1';
 	const defaultPlayer2Name = 'Player 2';
 
-	let player1Name = $state(defaultPlayer1Name);
-	let player2Name = $state(defaultPlayer2Name);
+	let player1Name = $state('');
+	let player2Name = $state('');
 	let round = $state(0);
 	let leftScore = $state(0);
 	let rightScore = $state(0);
@@ -295,6 +295,7 @@
 				increaseLabel="Increase tracker 1"
 				isServing={servingSide === 'left'}
 				nameSuggestionsListId="saved-player-names"
+				placeholder={defaultPlayer1Name}
 				score={leftScore}
 				onDecrease={() => updateLeftScore(-1)}
 				onIncrease={() => updateLeftScore(1)}
@@ -307,6 +308,7 @@
 				increaseLabel="Increase tracker 2"
 				isServing={servingSide === 'right'}
 				nameSuggestionsListId="saved-player-names"
+				placeholder={defaultPlayer2Name}
 				score={rightScore}
 				onDecrease={() => updateRightScore(-1)}
 				onIncrease={() => updateRightScore(1)}
