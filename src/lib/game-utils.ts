@@ -35,23 +35,25 @@ export function calculateServingSide(
 }
 
 export function formatHistoryDate(date: Date): string {
-	const now = new Date();
-	const isToday =
-		date.getDate() === now.getDate() &&
-		date.getMonth() === now.getMonth() &&
-		date.getFullYear() === now.getFullYear();
-
-	if (isToday) {
-		return new Intl.DateTimeFormat('en-US', {
-			hour: 'numeric',
-			minute: '2-digit',
-			hour12: true
-		}).format(date);
-	}
-
 	const day = date.getDate();
 	const month = date.getMonth() + 1;
 	const year = date.getFullYear().toString().slice(-2);
 
 	return `${day}.${month}.${year}`;
+}
+
+export function formatHistoryTime(date: Date): string {
+	return new Intl.DateTimeFormat('en-US', {
+		hour: 'numeric',
+		minute: '2-digit',
+		hour12: true
+	}).format(date);
+}
+
+export function isSameCalendarDay(left: Date, right: Date): boolean {
+	return (
+		left.getDate() === right.getDate() &&
+		left.getMonth() === right.getMonth() &&
+		left.getFullYear() === right.getFullYear()
+	);
 }

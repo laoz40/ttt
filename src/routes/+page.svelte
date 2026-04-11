@@ -10,7 +10,12 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import WinnerDialog from '$lib/components/WinnerDialog.svelte';
-	import { calculateServingSide, calculateWinner, formatHistoryDate } from '$lib/game-utils.js';
+	import {
+		calculateServingSide,
+		calculateWinner,
+		formatHistoryDate,
+		formatHistoryTime
+	} from '$lib/game-utils.js';
 	import {
 		getHistoryStorageKey,
 		getSavedPlayerNames,
@@ -103,7 +108,9 @@
 			history = Array.isArray(parsedHistory)
 				? (parsedHistory as Array<Partial<GameHistoryEntry> & { id?: string }>).map((entry) => ({
 						id: entry.id ?? createHistoryEntryId(),
-						date: entry.date ?? formatHistoryDate(new Date()),
+						date: entry.time ? entry.date ?? formatHistoryDate(new Date()) : '',
+						time: entry.time ?? '',
+						legacyPlayedAt: entry.time ? undefined : entry.date,
 						player1Name:
 							normalizePlayerName(entry.player1Name ?? '') || defaultPlayer1Name,
 						player1Score: entry.player1Score ?? 0,
@@ -194,10 +201,13 @@
 		if (!winner) return;
 
 		savedPlayerNames = saveSavedPlayerNames([player1NameValue, player2NameValue]);
+		const now = new Date();
+
 		history = [
 			{
 				id: createHistoryEntryId(),
-				date: formatHistoryDate(new Date()),
+				date: formatHistoryDate(now),
+				time: formatHistoryTime(now),
 				player1Name: player1NameValue,
 				player1Score: leftScore,
 				player2Name: player2NameValue,
@@ -333,7 +343,7 @@
 		{/each}
 	</datalist>
 
-	<div class="my-6 px-2">
+	<div class="self-center px-6 my-6 w-md">
 		<RoundIndicator rounds={roundWinners} />
 	</div>
 

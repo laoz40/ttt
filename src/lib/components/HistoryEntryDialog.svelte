@@ -28,6 +28,22 @@
 	function getPlayerName(value: string | undefined, fallback: string): string {
 		return normalizePlayerName(value ?? '') || fallback;
 	}
+
+	function getPlayedAtDetails(entry: GameHistoryEntry): string {
+		if (entry.date && entry.time) {
+			return `${entry.date} • ${entry.time}`;
+		}
+
+		if (entry.date) {
+			return entry.date;
+		}
+
+		if (entry.time) {
+			return entry.time;
+		}
+
+		return entry.legacyPlayedAt ?? '';
+	}
 </script>
 
 <Dialog.Root bind:open={open}>
@@ -36,7 +52,7 @@
 			<div class="flex max-h-[calc(100vh-2rem)] w-full min-w-0 flex-col gap-5 overflow-hidden p-6">
 				<Dialog.Header class="w-full min-w-0">
 					<Dialog.Title class="text-center text-2xl font-medium leading-6">Game details</Dialog.Title>
-					<Dialog.Description class="text-center">{entry.date}</Dialog.Description>
+					<Dialog.Description class="text-center">{getPlayedAtDetails(entry)}</Dialog.Description>
 				</Dialog.Header>
 
 				<div class="mt-5 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3">
