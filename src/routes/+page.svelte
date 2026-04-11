@@ -40,6 +40,7 @@
 	let isHistoryDialogOpen = $state(false);
 	let loadedHistoryKey = $state<string | null>(null);
 	let savedPlayerNames = $state<string[]>([]);
+	let areSidesSwapped = $state(false);
 
 	const player1NameValue = $derived(normalizePlayerName(player1Name) || defaultPlayer1Name);
 	const player2NameValue = $derived(normalizePlayerName(player2Name) || defaultPlayer2Name);
@@ -54,7 +55,15 @@
 	const winner = $derived(
 		calculateWinner(leftScore, rightScore, player1NameValue, player2NameValue, targetScore)
 	);
-	const servingSide = $derived(calculateServingSide(leftScore, rightScore, targetScore));
+	const servingSide = $derived.by(() => {
+		const currentServingSide = calculateServingSide(leftScore, rightScore, targetScore);
+
+		if (!areSidesSwapped) {
+			return currentServingSide;
+		}
+
+		return currentServingSide === 'left' ? 'right' : 'left';
+	});
 
 	function selectInputText(event: FocusEvent | MouseEvent): void {
 		(event.currentTarget as HTMLInputElement | null)?.select();
@@ -223,6 +232,7 @@
 		[player1Name, player2Name] = [player2Name, player1Name];
 		[leftScore, rightScore] = [rightScore, leftScore];
 		roundWinners = roundWinners.map((winner) => (winner === 'player1' ? 'player2' : 'player1'));
+		areSidesSwapped = !areSidesSwapped;
 	}
 
 	function openHistoryEntry(entry: GameHistoryEntry): void {
