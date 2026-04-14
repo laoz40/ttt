@@ -11,6 +11,7 @@
         "@eslint/compat": "^2.0.4",
         "@eslint/js": "^10.0.1",
         "@fontsource/nova-square": "^5.2.8",
+        "@internationalized/date": "^3.12.0",
         "@lucide/svelte": "^1.8.0",
         "@sveltejs/adapter-auto": "^7.0.1",
         "@sveltejs/kit": "^2.57.0",

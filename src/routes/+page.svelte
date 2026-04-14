@@ -7,7 +7,14 @@
 	import HistoryList, { type GameHistoryEntry } from '$lib/components/HistoryList.svelte';
 	import RoundIndicator, { type RoundWinner } from '$lib/components/RoundIndicator.svelte';
 	import Tracker from '$lib/components/Tracker.svelte';
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Button, buttonVariants } from '$lib/components/ui/button/index.js';
+	import {
+		DropdownMenu,
+		DropdownMenuContent,
+		DropdownMenuGroup,
+		DropdownMenuItem,
+		DropdownMenuTrigger
+	} from '$lib/components/ui/dropdown-menu/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import WinnerDialog from '$lib/components/WinnerDialog.svelte';
 	import {
@@ -41,6 +48,7 @@
 	let loadedHistoryKey = $state<string | null>(null);
 	let savedPlayerNames = $state<string[]>([]);
 	let areSidesSwapped = $state(false);
+	let isServingSideSwapped = $state(false);
 
 	const player1NameValue = $derived(normalizePlayerName(player1Name) || defaultPlayer1Name);
 	const player2NameValue = $derived(normalizePlayerName(player2Name) || defaultPlayer2Name);
@@ -56,13 +64,17 @@
 		calculateWinner(leftScore, rightScore, player1NameValue, player2NameValue, targetScore)
 	);
 	const servingSide = $derived.by(() => {
-		const currentServingSide = calculateServingSide(leftScore, rightScore, targetScore);
+		let currentServingSide = calculateServingSide(leftScore, rightScore, targetScore);
 
-		if (!areSidesSwapped) {
-			return currentServingSide;
+		if (areSidesSwapped) {
+			currentServingSide = currentServingSide === 'left' ? 'right' : 'left';
 		}
 
-		return currentServingSide === 'left' ? 'right' : 'left';
+		if (isServingSideSwapped) {
+			currentServingSide = currentServingSide === 'left' ? 'right' : 'left';
+		}
+
+		return currentServingSide;
 	});
 
 	function selectInputText(event: FocusEvent | MouseEvent): void {
@@ -235,6 +247,10 @@
 		areSidesSwapped = !areSidesSwapped;
 	}
 
+	function swapServingSide(): void {
+		isServingSideSwapped = !isServingSideSwapped;
+	}
+
 	function openHistoryEntry(entry: GameHistoryEntry): void {
 		selectedHistoryEntry = entry;
 		isHistoryDialogOpen = true;
@@ -335,16 +351,20 @@
 			/>
 		</div>
 
-		<Button
-			type="button"
-			variant="ghost"
-			size="icon-sm"
-			class="absolute top-7 left-1/2 z-10 -translate-x-1/2"
-			aria-label="Swap player sides"
-			onclick={swapSides}
-		>
-			<ArrowLeftRight aria-hidden="true" />
-		</Button>
+		<DropdownMenu>
+			<DropdownMenuTrigger
+				class={`${buttonVariants({ variant: 'ghost', size: 'icon-sm' })} absolute top-7 left-1/2 -translate-x-1/2`}
+				aria-label="Open swap options"
+			>
+				<ArrowLeftRight aria-hidden="true" />
+			</DropdownMenuTrigger>
+			<DropdownMenuContent align="center">
+				<DropdownMenuGroup>
+					<DropdownMenuItem onclick={swapSides}>Swap players</DropdownMenuItem>
+					<DropdownMenuItem onclick={swapServingSide}>Swap serving side</DropdownMenuItem>
+				</DropdownMenuGroup>
+			</DropdownMenuContent>
+		</DropdownMenu>
 	</div>
 
 	<datalist id="saved-player-names">
