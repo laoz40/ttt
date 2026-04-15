@@ -60,7 +60,7 @@
 			type="button"
 			variant="secondary"
 			size="icon-lg"
-			class="size-16 dark:bg-secondary-foreground dark:text-primary-foreground"
+			class="size-16 sphere-button sphere-button--decrease dark:bg-secondary-foreground dark:text-primary-foreground"
 			aria-label={decreaseLabel}
 			onclick={onDecrease}
 		>
@@ -69,7 +69,7 @@
 		<Button
 			type="button"
 			size="icon-lg"
-			class="size-16"
+			class="size-16 sphere-button sphere-button--increase"
 			aria-label={increaseLabel}
 			onclick={onIncrease}
 		>
@@ -77,3 +77,78 @@
 		</Button>
 	</div>
 </section>
+
+<style>
+	:global(.sphere-button) {
+		position: relative;
+		overflow: hidden;
+		isolation: isolate;
+		border: 0 !important;
+		border-radius: 9999px !important;
+		box-shadow:
+			0 10px 16px rgba(0, 0, 0, 0.12),
+			0 3px 5px rgba(0, 0, 0, 0.06),
+			inset 0 1px 1px rgba(255, 255, 255, 0.18),
+			inset 0 -5px 8px rgba(0, 0, 0, 0.08) !important;
+		transition:
+			transform 150ms ease,
+			box-shadow 150ms ease,
+			filter 150ms ease;
+	}
+
+	:global(.sphere-button::before) {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		pointer-events: none;
+		background: radial-gradient(circle at 32% 30%, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.14) 16%, rgba(255, 255, 255, 0.06) 28%, rgba(255, 255, 255, 0) 46%);
+		opacity: 0.7;
+	}
+
+	:global(.sphere-button::after) {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		pointer-events: none;
+		background: radial-gradient(circle at 62% 68%, rgba(0, 0, 0, 0.12) 0%, rgba(0, 0, 0, 0.08) 18%, rgba(0, 0, 0, 0) 55%);
+		opacity: 0.8;
+	}
+
+	:global(.sphere-button--decrease) {
+		background-color: hsl(var(--background)) !important;
+		color: hsl(var(--foreground)) !important;
+		background-image:
+			radial-gradient(circle at 32% 30%, rgba(255, 255, 255, 0.32) 0%, rgba(255, 255, 255, 0.18) 16%, rgba(255, 255, 255, 0.05) 28%, rgba(255, 255, 255, 0) 46%),
+			radial-gradient(circle at 62% 68%, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.06) 18%, rgba(0, 0, 0, 0) 55%),
+			radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.02) 0%, rgba(0, 0, 0, 0.06) 100%);
+	}
+
+	:global(.sphere-button--increase) {
+		background-color: hsl(38 100% 50%) !important;
+		color: hsl(0 0% 14%) !important;
+		background-image:
+			radial-gradient(circle at 32% 30%, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.12) 16%, rgba(255, 255, 255, 0.04) 28%, rgba(255, 255, 255, 0) 46%),
+			radial-gradient(circle at 62% 68%, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.06) 18%, rgba(0, 0, 0, 0) 55%),
+			radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.03) 0%, rgba(0, 0, 0, 0.08) 100%);
+	}
+
+	:global(.sphere-button:hover) {
+		transform: translateY(-1px);
+		filter: saturate(1.01);
+		box-shadow:
+			0 12px 18px rgba(0, 0, 0, 0.14),
+			0 4px 7px rgba(0, 0, 0, 0.07),
+			inset 0 1px 1px rgba(255, 255, 255, 0.2),
+			inset 0 -5px 8px rgba(0, 0, 0, 0.09) !important;
+	}
+
+	:global(.sphere-button:active) {
+		transform: translateY(1px);
+		box-shadow:
+			0 7px 12px rgba(0, 0, 0, 0.12),
+			inset 0 2px 4px rgba(0, 0, 0, 0.12),
+			inset 0 -2px 4px rgba(255, 255, 255, 0.06) !important;
+	}
+</style>
