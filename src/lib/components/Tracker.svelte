@@ -60,7 +60,7 @@
 			type="button"
 			variant="secondary"
 			size="icon-lg"
-			class="size-16 sphere-button sphere-button--decrease dark:bg-secondary-foreground dark:text-primary-foreground"
+			class="size-16 sphere-button sphere-button--decrease"
 			aria-label={decreaseLabel}
 			onclick={onDecrease}
 		>
@@ -123,6 +123,11 @@
 			radial-gradient(circle at 32% 30%, rgba(255, 255, 255, 0.32) 0%, rgba(255, 255, 255, 0.18) 16%, rgba(255, 255, 255, 0.05) 28%, rgba(255, 255, 255, 0) 46%),
 			radial-gradient(circle at 62% 68%, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.06) 18%, rgba(0, 0, 0, 0) 55%),
 			radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.02) 0%, rgba(0, 0, 0, 0.06) 100%);
+	}
+
+	:global(.dark .sphere-button--decrease) {
+		background-color: hsl(0 0% 100%) !important;
+		color: hsl(0 0% 14%) !important;
 	}
 
 	:global(.sphere-button--increase) {
