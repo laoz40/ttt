@@ -20,7 +20,7 @@
 	aria-label="Round point indicator"
 >
 	<div class="min-w-max">
-		<div class="flex min-h-4 justify-start gap-1">
+		<div class="flex min-h-4 justify-start gap-1 px-4">
 			{#each rounds as round}
 				<div class="flex h-4 w-4 flex-none items-end justify-center">
 					{#if round === 'player1'}
@@ -32,7 +32,7 @@
 
 		<div class="my-1 h-px w-full bg-primary"></div>
 
-		<div class="flex min-h-4 justify-start gap-1">
+		<div class="flex min-h-4 justify-start gap-1 px-4">
 			{#each rounds as round}
 				<div class="flex h-4 w-4 flex-none items-start justify-center">
 					{#if round === 'player2'}
