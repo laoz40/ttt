@@ -1,8 +1,7 @@
 <script lang="ts">
 	import Minus from '@lucide/svelte/icons/minus';
 	import Plus from '@lucide/svelte/icons/plus';
-
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { AnimatedButton } from '$lib/components/ui/animated-button/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 
 	export type TrackerProps = {
@@ -34,6 +33,16 @@
 	function selectInputText(event: FocusEvent | MouseEvent): void {
 		(event.currentTarget as HTMLInputElement | null)?.select();
 	}
+
+	const tapSpringTransition = {
+		type: 'spring' as const,
+		stiffness: 520,
+		damping: 12,
+		mass: 0.55
+	};
+
+	const tapAnimation = { scale: 0.78 };
+	const noHoverAnimation = {};
 </script>
 
 <section class="flex flex-col items-center gap-5 p-2">
@@ -56,7 +65,10 @@
 	</div>
 	<p class="text-5xl font-bold">{score}</p>
 	<div class="flex gap-4">
-		<Button
+		<AnimatedButton
+			whileHover={noHoverAnimation}
+			whileTap={tapAnimation}
+			transition={tapSpringTransition}
 			type="button"
 			variant="secondary"
 			size="icon-lg"
@@ -65,8 +77,11 @@
 			onclick={onDecrease}
 		>
 			<Minus aria-hidden="true" />
-		</Button>
-		<Button
+		</AnimatedButton>
+		<AnimatedButton
+			whileHover={noHoverAnimation}
+			whileTap={tapAnimation}
+			transition={tapSpringTransition}
 			type="button"
 			size="icon-lg"
 			class="size-16 sphere-button sphere-button--increase"
@@ -74,7 +89,7 @@
 			onclick={onIncrease}
 		>
 			<Plus aria-hidden="true" />
-		</Button>
+		</AnimatedButton>
 	</div>
 </section>
 
@@ -91,7 +106,6 @@
 			inset 0 1px 1px rgba(255, 255, 255, 0.18),
 			inset 0 -5px 8px rgba(0, 0, 0, 0.08) !important;
 		transition:
-			transform 150ms ease,
 			box-shadow 150ms ease,
 			filter 150ms ease;
 	}
@@ -137,23 +151,5 @@
 			radial-gradient(circle at 32% 30%, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.12) 16%, rgba(255, 255, 255, 0.04) 28%, rgba(255, 255, 255, 0) 46%),
 			radial-gradient(circle at 62% 68%, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.06) 18%, rgba(0, 0, 0, 0) 55%),
 			radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.03) 0%, rgba(0, 0, 0, 0.08) 100%);
-	}
-
-	:global(.sphere-button:hover) {
-		transform: translateY(-1px);
-		filter: saturate(1.01);
-		box-shadow:
-			0 12px 18px rgba(0, 0, 0, 0.14),
-			0 4px 7px rgba(0, 0, 0, 0.07),
-			inset 0 1px 1px rgba(255, 255, 255, 0.2),
-			inset 0 -5px 8px rgba(0, 0, 0, 0.09) !important;
-	}
-
-	:global(.sphere-button:active) {
-		transform: translateY(1px);
-		box-shadow:
-			0 7px 12px rgba(0, 0, 0, 0.12),
-			inset 0 2px 4px rgba(0, 0, 0, 0.12),
-			inset 0 -2px 4px rgba(255, 255, 255, 0.06) !important;
 	}
 </style>
