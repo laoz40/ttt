@@ -138,9 +138,14 @@
 		loadedHistoryKey = key;
 	});
 
-	// Save history after it has been loaded for the active player pair.
+	// Save non-empty history after it has been loaded for the active player pair.
 	$effect(() => {
 		if (!browser || !historyStorageKey || historyStorageKey !== loadedHistoryKey) return;
+
+		if (history.length === 0) {
+			localStorage.removeItem(historyStorageKey);
+			return;
+		}
 
 		localStorage.setItem(historyStorageKey, JSON.stringify(history));
 	});
