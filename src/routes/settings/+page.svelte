@@ -6,14 +6,27 @@
 	import { clearAllHistory } from '$lib/history-storage.js';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
+	import SettingsExportButtons from '$lib/components/SettingsExportButtons.svelte';
 
+	// Delete history state
 	let isCleared = $state(false);
 	let isDeleteDialogOpen = $state(false);
 
+	// Export status state
+	let exportStatus = $state('');
+
+	// Export actions
+	function handleExportComplete(message: string): void {
+		exportStatus = message;
+		isCleared = false;
+	}
+
+	// Delete history actions
 	function handleClearHistory(): void {
 		clearAllHistory();
 		isCleared = true;
 		isDeleteDialogOpen = false;
+		exportStatus = '';
 	}
 </script>
 
@@ -34,7 +47,14 @@
 		{/if}
 	</Button>
 
-	<Button type="button" variant="destructive" class="w-full max-w-md" onclick={() => (isDeleteDialogOpen = true)}>
+	<SettingsExportButtons status={exportStatus} onExportComplete={handleExportComplete} />
+
+	<Button
+		type="button"
+		variant="destructive"
+		class="w-full max-w-md"
+		onclick={() => (isDeleteDialogOpen = true)}
+	>
 		Delete all evidence
 	</Button>
 
@@ -52,7 +72,12 @@
 			</Dialog.Header>
 
 			<div class="flex gap-3 pt-2">
-				<Button type="button" variant="outline" class="flex-1" onclick={() => (isDeleteDialogOpen = false)}>
+				<Button
+					type="button"
+					variant="outline"
+					class="flex-1"
+					onclick={() => (isDeleteDialogOpen = false)}
+				>
 					Cancel
 				</Button>
 				<Button type="button" variant="destructive" class="flex-1" onclick={handleClearHistory}>
@@ -62,7 +87,7 @@
 		</Dialog.Content>
 	</Dialog.Root>
 
-	<p class="mt-auto text-center text-balance text-sm text-muted-foreground">
+	<p class="mt-auto text-center text-sm text-balance text-muted-foreground">
 		Made by the greatest table tennis player of all time,
 		<a href="https://github.com/laoz40" target="_blank" rel="noreferrer" class="text-primary">
 			Leo Zhou

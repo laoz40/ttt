@@ -46,7 +46,9 @@ export function getSavedPlayerNames(): string[] {
 	try {
 		const parsedNames = JSON.parse(storedNames) as unknown;
 
-		return Array.isArray(parsedNames) ? dedupePlayerNames(parsedNames.filter((name): name is string => typeof name === 'string')) : [];
+		return Array.isArray(parsedNames)
+			? dedupePlayerNames(parsedNames.filter((name): name is string => typeof name === 'string'))
+			: [];
 	} catch {
 		return [];
 	}
@@ -78,4 +80,48 @@ export function clearAllHistory(): void {
 	for (const key of keysToRemove) {
 		localStorage.removeItem(key);
 	}
+}
+
+export type StoredScoreHistory = {
+	key: string;
+	entries: unknown;
+};
+
+export type ScoreHistoryExport = {
+	exportedAt: string;
+	history: StoredScoreHistory[];
+};
+
+export function getAllScoreHistory(): StoredScoreHistory[] {
+	if (typeof window === 'undefined') return [];
+
+	const historyEntries = [] as StoredScoreHistory[];
+
+	for (let index = 0; index < localStorage.length; index += 1) {
+		const key = localStorage.key(index);
+
+		if (!key?.startsWith(historyStorageKeyPrefix)) continue;
+
+		const storedHistory = localStorage.getItem(key);
+
+		if (!storedHistory) {
+			historyEntries.push({ key, entries: [] });
+			continue;
+		}
+
+		try {
+			historyEntries.push({ key, entries: JSON.parse(storedHistory) });
+		} catch {
+			historyEntries.push({ key, entries: storedHistory });
+		}
+	}
+
+	return historyEntries.sort((left, right) => left.key.localeCompare(right.key));
+}
+
+export function getScoreHistoryExport(): ScoreHistoryExport {
+	return {
+		exportedAt: new Date().toISOString(),
+		history: getAllScoreHistory()
+	};
 }

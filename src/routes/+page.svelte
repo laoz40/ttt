@@ -52,9 +52,7 @@
 
 	const player1NameValue = $derived(normalizePlayerName(player1Name) || defaultPlayer1Name);
 	const player2NameValue = $derived(normalizePlayerName(player2Name) || defaultPlayer2Name);
-	const historyStorageKey = $derived(
-		getHistoryStorageKey(player1NameValue, player2NameValue)
-	);
+	const historyStorageKey = $derived(getHistoryStorageKey(player1NameValue, player2NameValue));
 	const targetScore = $derived.by(() => {
 		const parsed = Number.parseInt(winningScoreInput, 10);
 
@@ -129,18 +127,15 @@
 			history = Array.isArray(parsedHistory)
 				? (parsedHistory as Array<Partial<GameHistoryEntry> & { id?: string }>).map((entry) => ({
 						id: entry.id ?? createHistoryEntryId(),
-						date: entry.time ? entry.date ?? formatHistoryDate(new Date()) : '',
+						date: entry.time ? (entry.date ?? formatHistoryDate(new Date())) : '',
 						time: entry.time ?? '',
 						legacyPlayedAt: entry.time ? undefined : entry.date,
-						player1Name:
-							normalizePlayerName(entry.player1Name ?? '') || defaultPlayer1Name,
+						player1Name: normalizePlayerName(entry.player1Name ?? '') || defaultPlayer1Name,
 						player1Score: entry.player1Score ?? 0,
-						player2Name:
-							normalizePlayerName(entry.player2Name ?? '') || defaultPlayer2Name,
+						player2Name: normalizePlayerName(entry.player2Name ?? '') || defaultPlayer2Name,
 						player2Score: entry.player2Score ?? 0,
 						roundWinners: entry.roundWinners ?? [],
-						winnerName:
-							normalizePlayerName(entry.winnerName ?? '') || defaultPlayer1Name
+						winnerName: normalizePlayerName(entry.winnerName ?? '') || defaultPlayer1Name
 					}))
 				: [];
 		} catch {
@@ -368,12 +363,12 @@
 	</div>
 
 	<datalist id="saved-player-names">
-		{#each savedPlayerNames as name}
+		{#each savedPlayerNames as name (name)}
 			<option value={name}></option>
 		{/each}
 	</datalist>
 
-	<div class="self-center px-6 my-6 w-md">
+	<div class="my-6 w-md self-center px-6">
 		<RoundIndicator rounds={roundWinners} />
 	</div>
 
@@ -393,7 +388,9 @@
 				<HistoryList entries={history} onSelectEntry={openHistoryEntry} />
 			</div>
 		{:else}
-			<div class="mx-auto flex w-full max-w-md flex-1 items-start justify-center px-6 text-xs text-muted-foreground">
+			<div
+				class="mx-auto flex w-full max-w-md flex-1 items-start justify-center px-6 text-xs text-muted-foreground"
+			>
 				No games recorded between these opponents.
 			</div>
 		{/if}
