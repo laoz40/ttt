@@ -1,23 +1,27 @@
 # AGENTS.md
 
-This repository is a Svelte 5 + Tailwind CSS v4 project. For Svelte, your training data is outdated, the docs are the source of truth.
+Svelte 5 + Tailwind CSS v4 project. For Svelte, your training data is outdated, the docs are the source of truth.
 docs: `https://svelte.dev/docs/kit/llms-small.txt`
 
 - Package manager: `bun`
-- UI baseline includes shadcn-svelte (`src/lib/components/ui`).
+- prefer shadcn-svelte for ui (`src/lib/components/ui`).
 
 ## Expected Workflow for Agents
 
-1. Make minimal, focused changes.
-2. Preserve existing architectural style.
+- Make minimal, focused changes.
+- Preserve existing architectural style.
+- Before adding helper functions, check if they already exist
+- Avoid tiny helper files/functions for one-off logic
+- Avoid useless one-line wrappers; call or export the real function directly.
+- Optimize for readability and safe future changes over minimizing line count
+- Keep functions small and focused on one decision or operation
+- Prefer clear sequencing, guard clauses, and early returns over clever compact code
+- Keep nesting shallow; avoid more than two levels of nested control flow
+- Replace long `if`/`else if` chains and large inline booleans with named helpers or discriminated outcomes when clearer
+- Preserve useful existing comments during refactors; do not delete comments just because code moved.
+- Update comments when behavior changes so they stay accurate.
 
 ## Code Style Guidelines
-
-### Imports and Modules
-
-- Prefer ESM imports.
-- Keep imports at file top.
-- Order imports by: external packages, then internal aliases/relative paths.
 
 ### TypeScript and Types
 
@@ -34,14 +38,10 @@ docs: `https://svelte.dev/docs/kit/llms-small.txt`
 
 - Avoid arbitrary values: clamp, min(...), custom pixel brackets, and custom breakpoints.
 - Use theme-token color utilities (background, foreground, primary, etc.) over standard palette classes (white, gray, black).
+- Do not add classes that already exist in the component
 
 ### Accessibility and UX Safety
 
 - Preserve semantic HTML structure.
 - Ensure color contrast remains acceptable when adjusting theme tokens.
 
-## File/Change Hygiene
-
-- Do not add new dependencies unless needed for the task.
-- Do not edit generated artifacts unless the task explicitly requires it.
-- Keep diffs small and task-focused.
