@@ -23,6 +23,13 @@ docs: `https://svelte.dev/docs/kit/llms-small.txt`
 
 ## Code Style Guidelines
 
+### Components and pages
+
+- Extract major or self-contained UI sections into separate component files instead of growing a single large component file
+- Group related setup/state in clear sections instead of dumping many $state and $derived together.
+- Use short section comments for state groups, refs, actions, and derived values when a component has several related concerns.
+- Add short comments before `$effect` blocks that explain what the effect does, especially in large components or pages.
+
 ### TypeScript and Types
 
 - Prefer explicit exported types for component props and utility contracts.
