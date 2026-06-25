@@ -92,6 +92,11 @@ export type ScoreHistoryExport = {
 	history: StoredScoreHistory[];
 };
 
+export type ImportScoreHistoryResult = {
+	success: boolean;
+	message: string;
+};
+
 export function getAllScoreHistory(): StoredScoreHistory[] {
 	if (typeof window === 'undefined') return [];
 
@@ -124,4 +129,100 @@ export function getScoreHistoryExport(): ScoreHistoryExport {
 		exportedAt: new Date().toISOString(),
 		history: getAllScoreHistory()
 	};
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+	return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function isValidRoundWinner(value: unknown): boolean {
+	return value === 'player1' || value === 'player2';
+}
+
+function isValidScoreHistoryEntry(value: unknown): boolean {
+	if (!isRecord(value)) return false;
+
+	const hasRequiredStrings =
+		typeof value.id === 'string' &&
+		typeof value.date === 'string' &&
+		typeof value.time === 'string' &&
+		typeof value.winnerName === 'string';
+
+	if (!hasRequiredStrings) return false;
+
+	if (typeof value.player1Score !== 'number' || typeof value.player2Score !== 'number')
+		return false;
+	if (!Number.isFinite(value.player1Score) || !Number.isFinite(value.player2Score)) return false;
+
+	if (value.player1Name !== undefined && typeof value.player1Name !== 'string') return false;
+	if (value.player2Name !== undefined && typeof value.player2Name !== 'string') return false;
+	if (value.legacyPlayedAt !== undefined && typeof value.legacyPlayedAt !== 'string') return false;
+
+	return (
+		value.roundWinners === undefined ||
+		(Array.isArray(value.roundWinners) && value.roundWinners.every(isValidRoundWinner))
+	);
+}
+
+function validateScoreHistoryExport(value: unknown): value is ScoreHistoryExport {
+	if (!isRecord(value)) return false;
+	if (typeof value.exportedAt !== 'string' || !Array.isArray(value.history)) return false;
+
+	return value.history.every((historyEntry) => {
+		if (!isRecord(historyEntry)) return false;
+		if (typeof historyEntry.key !== 'string') return false;
+		if (!historyEntry.key.startsWith(historyStorageKeyPrefix)) return false;
+		if (!Array.isArray(historyEntry.entries)) return false;
+
+		return historyEntry.entries.every(isValidScoreHistoryEntry);
+	});
+}
+
+function clearScoreHistory(): void {
+	const keysToRemove = [] as string[];
+
+	for (let index = 0; index < localStorage.length; index += 1) {
+		const key = localStorage.key(index);
+
+		if (key?.startsWith(historyStorageKeyPrefix)) {
+			keysToRemove.push(key);
+		}
+	}
+
+	for (const key of keysToRemove) {
+		localStorage.removeItem(key);
+	}
+}
+
+export function validateScoreHistoryImport(value: unknown): ImportScoreHistoryResult {
+	if (!validateScoreHistoryExport(value)) {
+		return {
+			success: false,
+			message: 'Invalid score history JSON. Import a valid TTT export file.'
+		};
+	}
+
+	return { success: true, message: 'Score history JSON is valid.' };
+}
+
+export function importScoreHistoryExport(value: unknown): ImportScoreHistoryResult {
+	if (typeof window === 'undefined') {
+		return { success: false, message: 'Import is only available in the browser.' };
+	}
+
+	const validationResult = validateScoreHistoryImport(value);
+
+	if (!validationResult.success) {
+		return validationResult;
+	}
+
+	clearScoreHistory();
+
+	const scoreHistoryExport = value as ScoreHistoryExport;
+
+	for (const historyEntry of scoreHistoryExport.history) {
+		localStorage.setItem(historyEntry.key, JSON.stringify(historyEntry.entries));
+	}
+
+	return { success: true, message: 'Score history imported.' };
 }
